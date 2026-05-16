@@ -1,0 +1,12 @@
+{
+  "network": "zg_testnet",
+  "chainId": "16602",
+  "deployer": "0xFB486dB657Fa6e3Ff84F93AfB6482Ac7efcD1FC4",
+  "token": "0x7Be19093b74B261E91b4d3CB2C64F70bdBe15c3E",
+  "provenanceRegistry": "0xdA9AEe3C30520515f33E5311Cb8D646B6cf8cB08",
+  "soulboundToken": "0x97A09b2b6a531d5eC1481E29995f0c93D3433484",
+  "nodeStaking": "0xea67B497e7d7AB844ae6FA5aEB312d866A3F26EB",
+  "paymentRouter": "0xB0d0c5107380390493138A0Eb64e1De0FF933903",
+  "derivativeLineage": "0xe75c5F99e0De613A413593058D64C8792D769889",
+  "deployedAt": "2026-05-16T12:15:10.620Z"
+}

@@ -1,0 +1,188 @@
+openapi: 3.0.3
+info:
+  title: DeepProof Nexus API
+  version: 1.0.0
+  description: Decentralized Deepfake Detection & Perceptual Provenance Network on 0G
+servers:
+  - url: http://localhost:3001/api/v1
+    description: Local development
+  - url: https://api.deepproof.ai/api/v1
+    description: Production
+security:
+  - ApiKeyAuth: []
+paths:
+  /upload:
+    post:
+      summary: Upload file to 0G Storage
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: File uploaded successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sha256: { type: string }
+                  rootHash: { type: string }
+                  txHash: { type: string }
+                  mimeType: { type: string }
+                  size: { type: integer }
+                  storageUrl: { type: string }
+  /detect:
+    post:
+      summary: Submit file for deepfake detection
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                recipientAddress:
+                  type: string
+                  description: Ethereum address to receive SPT (optional)
+      responses:
+        '202':
+          description: Detection job queued
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jobId: { type: string }
+                  sha256: { type: string }
+                  status: { type: string, enum: [queued] }
+  /detect/{jobId}:
+    get:
+      summary: Poll detection job status
+      parameters:
+        - name: jobId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Job status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, enum: [queued, detecting, uploading_evidence, anchoring, complete, error] }
+                  result: { type: object }
+                  registryTx: { type: string }
+                  mintTx: { type: string }
+  /verify/{hash}:
+    get:
+      summary: Verify content by SHA-256 hash
+      parameters:
+        - name: hash
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Provenance record
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sha256: { type: string }
+                  verdict: { type: string, enum: [authentic, synthetic] }
+                  confidence: { type: integer }
+                  modelVersion: { type: string }
+                  timestamp: { type: integer }
+                  storageUrl: { type: string }
+  /nodes:
+    get:
+      summary: List active detection nodes
+      responses:
+        '200':
+          description: Active nodes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count: { type: integer }
+                  nodes:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        address: { type: string }
+                        stakedAmount: { type: string }
+                        totalVerifications: { type: integer }
+                        reputationScore: { type: integer }
+  /lineage/{hash}:
+    get:
+      summary: Get derivative lineage tree
+      parameters:
+        - name: hash
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lineage node
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  contentHash: { type: string }
+                  parentHash: { type: string, nullable: true }
+                  children: { type: array, items: { type: string } }
+                  editType: { type: string }
+  /certificate/{hash}:
+    get:
+      summary: Generate PDF certificate with QR code
+      parameters:
+        - name: hash
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: PDF certificate
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+  /health:
+    get:
+      summary: System health check
+      security: []
+      responses:
+        '200':
+          description: System healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, enum: [ok, degraded] }
+                  services: { type: object }
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-key

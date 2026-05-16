@@ -1,0 +1,19 @@
+{
+  "name": "deepproof-nexus",
+  "version": "1.0.0",
+  "description": "Decentralized Deepfake Detection & Perceptual Provenance Network on 0G",
+  "private": true,
+  "workspaces": ["api", "frontend", "cli"],
+  "scripts": {
+    "dev": "concurrently \"npm run dev --workspace=api\" \"npm run dev --workspace=frontend\"",
+    "build": "npm run build --workspace=frontend && npm run build --workspace=api",
+    "test": "npm run test --workspace=api",
+    "contracts:compile": "cd contracts && npx hardhat compile",
+    "contracts:test": "cd contracts && npx hardhat test",
+    "contracts:deploy:testnet": "cd contracts && npx hardhat run scripts/deploy.js --network zg_testnet",
+    "contracts:deploy:mainnet": "cd contracts && npx hardhat run scripts/deploy.js --network zg_mainnet"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
