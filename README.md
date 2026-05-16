@@ -1,5 +1,7 @@
 # DeepProof Nexus
 
+![DeepProof Nexus](./logo.svg)
+
 Decentralized deepfake detection and perceptual provenance network built on 0G infrastructure.
 
 Built for the 0G APAC Hackathon 2026.
